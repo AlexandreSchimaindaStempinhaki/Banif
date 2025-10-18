@@ -15,6 +15,7 @@ export default class AuthService {
         id: user.id,
         nome: user.nome,
         email: user.email,
+        papel_id: user.papel_id,
       },
       token: {
         type: 'bearer',
@@ -38,6 +39,7 @@ export default class AuthService {
         id: user.id,
         nome: user.nome,
         email: user.email,
+        papel_id: user.papel_id,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },

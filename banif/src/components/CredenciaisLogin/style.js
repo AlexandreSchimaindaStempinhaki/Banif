@@ -110,3 +110,18 @@ export const ContainerInput = styled.div`
   flex-flow: column;
   align-items: center;
 `;
+
+export const ContainerLoading = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 5vh;
+`
+
+export const MsgBox = styled.div`
+    display: grid;
+    grid-template-columns: 1fr;
+    text-align: center;
+    width: 90%;
+    padding-top: 10px;
+    color: red;
+`

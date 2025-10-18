@@ -57,8 +57,8 @@ Client.interceptors.response.use(
       removeToken()
       
       // Evitar redirecionamento em loop se já estiver na página de login
-      if (!window.location.pathname.includes('/login')) {
-        window.location.href = '/login'
+      if (!window.location.pathname.includes('/')) {
+        window.location.href = '/'
       }
     }
 
