@@ -13,7 +13,7 @@ const router = createBrowserRouter([
     element: <HomeGerente />,
   },
   {
-    path: "/Home/:email", // 🔧 MUDOU PARA EMAIL
+    path: "/Home/:email",
     element: <Home />,
   },
 ]);
