@@ -11,12 +11,12 @@ export const createUser = vine.compile(
         const user = await db.from('users').where('email', value).first()
         return !user
       }),
-    senha: vine.string().minLength(8).maxLength(32),
+    senha: vine.string().minLength(8).maxLength(8),
     cpf: vine.string().regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/),
     cidade: vine.string().trim().minLength(2).maxLength(100),
     estado: vine.string().trim().minLength(2).maxLength(2),
     rua: vine.string().trim().minLength(2).maxLength(100),
-    numero: vine.string().trim(),
+    numero: vine.string().trim().minLength(1).maxLength(6),
     papel_id: vine.number().positive().withoutDecimals(),
   })
 )

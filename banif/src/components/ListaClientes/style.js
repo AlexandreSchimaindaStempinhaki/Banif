@@ -27,6 +27,7 @@ export const InfoCliente = styled.p`
 export const ListaContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  min-height: 76vh;
   gap: 2rem;
   padding: 3rem;
   margin-top: 12vh;

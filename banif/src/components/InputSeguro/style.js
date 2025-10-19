@@ -2,16 +2,16 @@ import styled from "styled-components";
 
 export const InputContainer = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
   width: 100%;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const EditableDiv = styled.div`
   background-color: #f8f9fa;
   width: 80%;
-  height: calc(calc(3vh + 4vw) / 2);
+  height: calc(calc(3vh + 3vw) / 2);
   border: none;
   border-radius: 50px;
   font-size: calc(calc(2vw + 0.5vh) / 2);
@@ -28,7 +28,7 @@ export const EditableDiv = styled.div`
 
   &:focus {
     background-color: #ffffff;
-    box-shadow: 0 0 0 2px #007bff;
+    box-shadow: 0 0 0 2px #1e90ff;
   }
 
   &[placeholder]:empty:before {

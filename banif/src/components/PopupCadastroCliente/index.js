@@ -1,5 +1,5 @@
 import { FiX } from "react-icons/fi";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   Container,
   Popup,
@@ -8,22 +8,51 @@ import {
   LinhaEndereco,
   BotaoFechar,
   BotaoEnviar,
+  SelectSeguro,
 } from "./style";
 import PopupMensagem from "../PopupMensagem";
 import InputSeguro from "../InputSeguro";
+import InputMask from "react-input-mask";
+import { Client } from '../../api/client';
+import { estados } from "../../data/estados";
+
 
 export default function PopupCadastroCliente({ fechar }) {
   const [fechando, setFechando] = useState(false);
   const [mensagem, setMensagem] = useState(null);
-  const [formData, setFormData] = useState({
-    nome: "",
-    cpf: "",
-    email: "",
-    cidade: "",
-    estado: "",
-    rua: "",
-    numero: "",
-  });
+
+  const [nome, setNome] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [cidade, setCidade] = useState('');
+  const [estado, setEstado] = useState('');
+  const [rua, setRua] = useState('');
+  const [numero, setNumero] = useState('');
+
+
+  async function sendData() {
+    const user = { nome, email, senha, cpf, cidade, estado, rua, numero, papel_id: 2 };
+
+    try {
+      const response = await Client.post('users', user);
+      console.log(response.data);
+
+      setMensagem({ texto: 'Cadastro realizado com sucesso!', tipo: 'success' });
+    } catch (error) {
+      console.error(error);
+
+      if (error.response?.status === 422 && error.response.data?.errors) {
+        const erros = Object.values(error.response.data.errors)
+          .map((e) => e.message)
+          .join('\n');
+        setMensagem({ texto: erros, tipo: 'error' });
+      } else {
+        setMensagem({ texto: 'Ocorreu um erro inesperado.', tipo: 'error' });
+      }
+    }
+  }
+
 
   const fecharMensagem = useCallback(() => {
     setMensagem(null);
@@ -36,86 +65,25 @@ export default function PopupCadastroCliente({ fechar }) {
     }, 250);
   }, [fechar]);
 
-  const handleInputChange = useCallback((e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  }, []);
+  const padronizarCpf = (e) => {
+    let valor = e.target.value.replace(/\D/g, '');
 
-  // 🔧 FUNÇÃO DE VALIDAÇÃO
-  const validarFormulario = () => {
-    const erros = [];
+    if (valor.length > 11) valor = valor.slice(0, 11);
 
-    // Validação do Nome
-    if (!formData.nome.trim()) {
-      erros.push("Nome é obrigatório");
-    } else if (!/^[A-Za-zÀ-ÿ ]+$/.test(formData.nome)) {
-      erros.push("Nome deve conter apenas letras");
+    if (valor.length > 6) {
+      valor = valor.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+    } else if (valor.length > 3) {
+      valor = valor.replace(/(\d{3})(\d{1,3})/, '$1.$2');
     }
 
-    // Validação do CPF
-    if (!formData.cpf.trim()) {
-      erros.push("CPF é obrigatório");
-    } else if (!/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(formData.cpf)) {
-      erros.push("CPF deve estar no formato 000.000.000-00");
+    if (valor.length > 9) {
+      valor = valor.replace(/(\d{3})\.(\d{3})\.(\d{3})(\d{1,2})?/, '$1.$2.$3-$4');
     }
 
-    // Validação do Email
-    if (!formData.email.trim()) {
-      erros.push("Email é obrigatório");
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      erros.push("Email deve estar no formato email@exemplo.com");
-    }
-
-    // Validação dos campos de endereço
-    if (!formData.cidade.trim()) erros.push("Cidade é obrigatória");
-    if (!formData.estado.trim()) erros.push("Estado é obrigatório");
-    if (!formData.rua.trim()) erros.push("Rua é obrigatória");
-    if (!formData.numero.trim()) erros.push("Número é obrigatório");
-
-    return erros;
+    setCpf(valor);
   };
 
-  const handleSubmit = useCallback(
-    (e) => {
-      e.preventDefault();
 
-      // 🔧 VALIDA ANTES DE ENVIAR
-      const erros = validarFormulario();
-
-      if (erros.length > 0) {
-        // 🔧 FORMATA AS MENSAGENS UMA EM BAIXO DA OUTRA
-        const mensagemErro = erros.map((erro) => `• ${erro}`).join("\n");
-
-        setMensagem({
-          texto: `Erros de validação:\n${mensagemErro}`,
-          tipo: "error",
-        });
-        return;
-      }
-
-      // Se passou na validação, envia os dados
-      const sucesso = true; // Simulação de sucesso
-
-      if (sucesso) {
-        setMensagem({
-          texto: "Cliente cadastrado com sucesso!",
-          tipo: "success",
-        });
-        setTimeout(() => {
-          if (fechar) fechar();
-        }, 1500);
-      } else {
-        setMensagem({
-          texto: "Erro ao cadastrar cliente!",
-          tipo: "error",
-        });
-      }
-    },
-    [fechar, formData]
-  );
 
   return (
     <>
@@ -125,29 +93,41 @@ export default function PopupCadastroCliente({ fechar }) {
             <FiX size={28} color="#fff" />
           </BotaoFechar>
 
-          <Formulario onSubmit={handleSubmit}>
+          <Formulario onSubmit={async (e) => {
+            e.preventDefault();
+            const sucesso = await sendData();
+            if (sucesso) handleFechar();
+          }}>
             <Label>Nome</Label>
             <InputSeguro
               placeholder="Nome completo"
               name="nome"
-              value={formData.nome}
-              onChange={handleInputChange}
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
             />
 
             <Label>CPF</Label>
             <InputSeguro
               placeholder="000.000.000-00"
               name="cpf"
-              value={formData.cpf}
-              onChange={handleInputChange}
+              value={cpf}
+              onChange={padronizarCpf}
             />
 
             <Label>Email</Label>
             <InputSeguro
               placeholder="email@email.com"
               name="email"
-              value={formData.email}
-              onChange={handleInputChange}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <Label>Senha</Label>
+            <InputSeguro
+              placeholder="Digite 8 números"
+              name="senha"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
             />
 
             <Label>Endereço</Label>
@@ -155,30 +135,40 @@ export default function PopupCadastroCliente({ fechar }) {
               <InputSeguro
                 placeholder="Cidade"
                 name="cidade"
-                value={formData.cidade}
-                onChange={handleInputChange}
+                value={cidade}
+                onChange={(e) => setCidade(e.target.value)}
               />
-              <InputSeguro
-                placeholder="Estado"
+              <SelectSeguro
                 name="estado"
-                value={formData.estado}
-                onChange={handleInputChange}
-              />
+                value={estado}
+                onChange={(e) => setEstado(e.target.value)}
+              >
+                <option value="">Selecione o estado</option>
+                {estados.map((e) => (
+                  <option key={e.sigla} value={e.sigla}>
+                    {e.nome}
+                  </option>
+                ))}
+              </SelectSeguro>
+
             </LinhaEndereco>
 
             <LinhaEndereco>
               <InputSeguro
                 placeholder="Rua"
                 name="rua"
-                value={formData.rua}
-                onChange={handleInputChange}
+                value={rua}
+                onChange={(e) => setRua(e.target.value)}
               />
               <InputSeguro
                 placeholder="Número"
                 name="numero"
                 type="number"
-                value={formData.numero}
-                onChange={handleInputChange}
+                value={numero}
+                onChange={(e) => {
+                    const valor = e.target.value.replace(/\D/g, '');
+                    setNumero(valor);
+                }}
               />
             </LinhaEndereco>
 

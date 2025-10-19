@@ -2,12 +2,11 @@ import { useState } from "react";
 import { Header, Titulo, Button, Sidebar, SidebarButton } from "./style";
 import Logo from "../../images/logo.png";
 import LogoBlack from "../../images/logoBlack.png";
-import PopupCadastroCliente from "../PopupCadastroCliente";
 
-export default function CabecalhoGerente() {
+export default function CabeçalhoCliente({ cliente }) {
+  // 🔧 RECEBE CLIENTE COMO PROP
   const [clicado, setClicado] = useState(false);
   const [sidebarAberta, setSidebarAberta] = useState(false);
-  const [popupClienteAberto, setPopupClienteAberto] = useState(false);
 
   const handleClick = () => {
     setClicado(!clicado);
@@ -22,18 +21,19 @@ export default function CabecalhoGerente() {
           clicado={clicado}
           imagem={clicado ? LogoBlack : Logo}
         />
-        <Titulo>Bem Vindo ao Banif</Titulo>
+        {/* 🔧 TÍTULO DINÂMICO COM NOME DO CLIENTE */}
+        <Titulo>Bem Vindo, {cliente?.nome || "Cliente"}!</Titulo>
 
         <Sidebar aberta={sidebarAberta}>
-          <SidebarButton onClick={() => setPopupClienteAberto(true)}>
+          {/* <SidebarButton onClick={() => setPopupClienteAberto(true)}>
             Cadastrar Cliente
-          </SidebarButton>
+          </SidebarButton> */}
         </Sidebar>
       </Header>
 
-      {popupClienteAberto && (
+      {/* {popupClienteAberto && (
         <PopupCadastroCliente fechar={() => setPopupClienteAberto(false)} />
-      )}
+      )} */}
     </>
   );
 }

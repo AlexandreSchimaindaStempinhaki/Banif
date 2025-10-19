@@ -46,32 +46,6 @@ export default function InputSeguro({
     return () => div.removeEventListener("input", handleInput);
   }, [onChange, name, type]);
 
-  // 🔧 Validação de entrada por tipo
-  const handleKeyPress = (e) => {
-    if (type === "number") {
-      // Permite apenas números, backspace, delete, tab, etc.
-      if (!/[0-9.,]|Backspace|Delete|Tab|ArrowLeft|ArrowRight/.test(e.key)) {
-        e.preventDefault();
-      }
-    }
-
-    // 🔧 Validação para CPF (000.000.000-00)
-    if (name === "cpf") {
-      const allowedChars = /[0-9.\-]|Backspace|Delete|Tab|ArrowLeft|ArrowRight/;
-      if (!allowedChars.test(e.key)) {
-        e.preventDefault();
-      }
-    }
-
-    // 🔧 Validação para Agência (1234-5) e Conta (123456-7)
-    if (name === "agencia" || name === "conta") {
-      const allowedChars = /[0-9\-]|Backspace|Delete|Tab|ArrowLeft|ArrowRight/;
-      if (!allowedChars.test(e.key)) {
-        e.preventDefault();
-      }
-    }
-  };
-
   return (
     <InputContainer style={style}>
       <EditableDiv
@@ -79,7 +53,6 @@ export default function InputSeguro({
         contentEditable
         placeholder={placeholder}
         suppressContentEditableWarning={true}
-        onKeyPress={handleKeyPress}
         style={{
           ...style,
           backgroundColor: style?.backgroundColor || "#f8f9fa",
