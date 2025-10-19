@@ -8,13 +8,11 @@ const fadeIn = keyframes`
 export const Container = styled.div`
   display: flex;
   position: fixed;
-  background-color: rgba(248, 249, 250, 0.2);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.7);
   justify-content: center;
   align-items: center;
   width: 100%;
-  min-height: 88vh;
-  max-height: 88vh;
+  height: 100vh;
   z-index: 15;
   opacity: 1;
   transition: opacity 0.25s ease;
@@ -55,33 +53,6 @@ export const Label = styled.label`
   align-self: flex-start;
 `;
 
-export const Input = styled.input`
-  background-color: #f8f9fa;
-  width: 80%;
-  height: calc(calc(3vh + 4vw) / 2);
-  border: none;
-  border-radius: 50px;
-  font-size: calc(calc(2vw + 0.5vh) / 2);
-  color: #ffffff;
-  padding: 8px 15px;
-  outline: none;
-  transition: 0.3s;
-
-  &::placeholder {
-    color: #6c757d;
-  }
-
-  &:focus {
-    background-color: #6fb9f0;
-    box-shadow: 0 0 5px #ffffff;
-  }
-
-  @media (max-width: 800px) {
-    width: 90%;
-    font-size: calc(calc(3vw + 0.5vh) / 2);
-  }
-`;
-
 export const BotaoFechar = styled.button`
   position: absolute;
   top: 10px;
@@ -117,4 +88,3 @@ export const BotaoEnviar = styled.button`
     transform: scale(0.98);
   }
 `;
-

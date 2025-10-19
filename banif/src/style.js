@@ -1,6 +1,6 @@
 import { createGlobalStyle } from "styled-components";
 
-import "@fontsource/poppins";
+// import "@fontsource/poppins";
 export const GlobalStyle = createGlobalStyle`
 
   *{

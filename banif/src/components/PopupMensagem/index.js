@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiX } from "react-icons/fi";
-import { Container, MensagemPopup, BotaoFechar } from "./style";
+import { Container, MensagemPopup, MensagemTexto, BotaoFechar } from "./style";
 
 export default function PopupMensagem({
   mensagem,
@@ -8,19 +8,53 @@ export default function PopupMensagem({
   fechar,
   duracao = 3000,
 }) {
+  const [visivel, setVisivel] = useState(true);
+  const timerRef = useRef(null);
+
+  // Limpa todos os timers ao desmontar
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
   // Fecha automaticamente depois de duracao ms
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fechar();
+    timerRef.current = setTimeout(() => {
+      setVisivel(false);
     }, duracao);
-    return () => clearTimeout(timer);
-  }, [duracao, fechar]);
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [duracao]);
+
+  const handleFechar = () => {
+    setVisivel(false);
+    setTimeout(() => {
+      fechar?.();
+    }, 250);
+  };
+
+  // Fecha quando a animação terminar
+  useEffect(() => {
+    if (!visivel) {
+      const timer = setTimeout(() => {
+        fechar?.();
+      }, 250);
+      return () => clearTimeout(timer);
+    }
+  }, [visivel, fechar]);
 
   return (
-    <Container>
+    <Container className={!visivel ? "fade-out" : ""}>
       <MensagemPopup tipo={tipo}>
-        {mensagem}
-        <BotaoFechar onClick={fechar}>
+        <MensagemTexto>{mensagem}</MensagemTexto>
+        <BotaoFechar onClick={handleFechar}>
           <FiX size={20} color="#fff" />
         </BotaoFechar>
       </MensagemPopup>

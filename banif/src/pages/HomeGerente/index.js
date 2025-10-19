@@ -1,9 +1,11 @@
 import { Corpo } from "./style";
-import Cabecalho from "../../components/Cabecalho";
+import CabecalhoGerente from "../../components/CabecalhoGerente";
+import ListaClientes from "../../components/ListaClientes";
 export default function HomeGerente() {
   return (
     <Corpo>
-      <Cabecalho />
+      <CabecalhoGerente />
+      <ListaClientes />
     </Corpo>
   );
 }

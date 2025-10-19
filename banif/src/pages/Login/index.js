@@ -10,44 +10,44 @@ import { ContainerLoading } from "../../components/CredenciaisLogin/style";
 
 export default function Login() {
 
-    const navigate = useNavigate();
-    const [load, setLoad] = useState(true)
+    // const navigate = useNavigate();
+    // const [load, setLoad] = useState(true)
 
-    function fetchData() {
+    // function fetchData() {
 
-        setLoad(true)
-        setTimeout(() => {
-            Client.get('auth/me').then(res => {
-                const load = res.data
-                console.log(load.user)
+    //     setLoad(true)
+    //     setTimeout(() => {
+    //         Client.get('auth/me').then(res => {
+    //             const load = res.data
+    //             console.log(load.user)
 
-                if (load.user.papel_id === 1) {
-                    navigate('/Home/Gerente')
-                }
-                else if (load.user.papel_id === 2) {
-                    navigate('/Home/Cliente')
-                }
-            })
-                .catch(function (error) {
-                    console.log(error)
-                })
-                .finally(() => {
-                    setLoad(false)
-                })
-        }, 1000)
-    }
+    //             if (load.user.papel_id === 1) {
+    //                 navigate('/Home/Gerente')
+    //             }
+    //             else if (load.user.papel_id === 2) {
+    //                 navigate('/Home/Cliente')
+    //             }
+    //         })
+    //             .catch(function (error) {
+    //                 console.log(error)
+    //             })
+    //             .finally(() => {
+    //                 setLoad(false)
+    //             })
+    //     }, 1000)
+    // }
 
-    useEffect(() => {
-        fetchData()
-    }, [])
+    // useEffect(() => {
+    //     fetchData()
+    // }, [])
 
     return (
-        load
-            ?
-            <ContainerLoading>
-                <OrbitProgress variant="spokes" color="#32cd32" size="medium" text="" textColor="" />
-            </ContainerLoading>
-            :
+        // load
+        //     ?
+        //     <ContainerLoading>
+        //         <OrbitProgress variant="spokes" color="#32cd32" size="medium" text="" textColor="" />
+        //     </ContainerLoading>
+        //     :
             <Container>
                 <ImagemLogin />
                 <CredenciaisLogin />

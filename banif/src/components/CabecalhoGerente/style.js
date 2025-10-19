@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const Header = styled.header`
   display: flex;
-  position: sticky;
+  position: fixed;
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -44,8 +44,8 @@ export const Sidebar = styled.div`
   position: fixed; /* FIXO para deslizar corretamente */
   top: 0;
   left: ${(props) =>
-    props.aberta ? "0" : "-22vw"}; /* ajusta conforme a largura */
-  width: 20vw;
+    props.aberta ? "0" : "-25vw"}; /* ajusta conforme a largura */
+  width: 22vw;
   height: 100vh; /* ocupa toda a altura */
   background-color: #fff;
   display: flex;
@@ -56,7 +56,7 @@ export const Sidebar = styled.div`
   z-index: 11;
   border-top-right-radius: 10px;
   border-botton-right-radius: 10px;
-  box-shadow: 10px 0 10px -5px rgba(255, 255, 255, 0.45);
+  box-shadow: 10px 0 10px -5px rgba(255, 255, 255, 0.4);
 `;
 
 export const SidebarButton = styled.button`

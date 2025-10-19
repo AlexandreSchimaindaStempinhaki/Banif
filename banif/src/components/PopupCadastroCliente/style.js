@@ -8,13 +8,11 @@ const fadeIn = keyframes`
 export const Container = styled.div`
   display: flex;
   position: fixed;
-  background-color: rgba(248, 249, 250, 0.2);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.7);
   justify-content: center;
   align-items: center;
   width: 100%;
-  min-height: 88vh;
-  max-height: 88vh;
+  height: 100vh;
   z-index: 15;
   opacity: 1;
   transition: opacity 0.25s ease;
@@ -71,11 +69,6 @@ export const Input = styled.input`
     color: #6c757d;
   }
 
-  &:focus {
-    background-color: #6fb9f0;
-    box-shadow: 0 0 5px #ffffff;
-  }
-
   @media (max-width: 800px) {
     width: 90%;
     font-size: calc(calc(3vw + 0.5vh) / 2);
@@ -88,7 +81,8 @@ export const LinhaEndereco = styled.div`
   width: 80%;
   gap: 10px;
 
-  ${Input} {
+  /* 🔧 ATUALIZADO para funcionar com InputSeguro */
+  & > div {
     width: 100%;
   }
 `;

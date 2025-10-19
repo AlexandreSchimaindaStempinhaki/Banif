@@ -5,7 +5,7 @@ import LogoBlack from "../../images/logoBlack.png";
 import PopupCadastroCliente from "../PopupCadastroCliente";
 import PopupCriarConta from "../PopupCriarConta";
 
-export default function Cabecalho() {
+export default function CabecalhoGerente() {
   const [clicado, setClicado] = useState(false);
   const [sidebarAberta, setSidebarAberta] = useState(false);
   const [popupClienteAberto, setPopupClienteAberto] = useState(false);
