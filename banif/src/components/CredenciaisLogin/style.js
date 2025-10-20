@@ -113,6 +113,9 @@ export const ContainerInput = styled.div`
 export const ContainerLoading = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height:100vh;
   margin-top: 5vh;
 `
 

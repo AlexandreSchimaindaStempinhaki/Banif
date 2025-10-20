@@ -12,7 +12,6 @@ import {
 } from "./style";
 import PopupMensagem from "../PopupMensagem";
 import InputSeguro from "../InputSeguro";
-import InputMask from "react-input-mask";
 import { Client } from '../../api/client';
 import { estados } from "../../data/estados";
 
@@ -31,6 +30,7 @@ export default function PopupCadastroCliente({ fechar }) {
   const [numero, setNumero] = useState('');
 
 
+
   async function sendData() {
     const user = { nome, email, senha, cpf, cidade, estado, rua, numero, papel_id: 2 };
 
@@ -39,6 +39,7 @@ export default function PopupCadastroCliente({ fechar }) {
       console.log(response.data);
 
       setMensagem({ texto: 'Cadastro realizado com sucesso!', tipo: 'success' });
+      return true;
     } catch (error) {
       console.error(error);
 
@@ -66,25 +67,22 @@ export default function PopupCadastroCliente({ fechar }) {
   }, [fechar]);
 
   const padronizarCpf = (e) => {
-    let valor = e.target.value.replace(/\D/g, '');
+    let valor = e.target.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+    if (valor.length > 11) valor = valor.slice(0, 11); // Limita a 11 dígitos
 
-    if (valor.length > 11) valor = valor.slice(0, 11);
-
-    if (valor.length > 6) {
-      valor = valor.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
-    } else if (valor.length > 3) {
+    // Aplica a máscara de CPF
+    if (valor.length <= 3) {
+      valor = valor;
+    } else if (valor.length <= 6) {
       valor = valor.replace(/(\d{3})(\d{1,3})/, '$1.$2');
-    }
-
-    if (valor.length > 9) {
-      valor = valor.replace(/(\d{3})\.(\d{3})\.(\d{3})(\d{1,2})?/, '$1.$2.$3-$4');
+    } else if (valor.length <= 9) {
+      valor = valor.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+    } else {
+      valor = valor.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
     }
 
     setCpf(valor);
   };
-
-
-
   return (
     <>
       <Container className={fechando ? "fade-out" : ""}>
@@ -96,7 +94,10 @@ export default function PopupCadastroCliente({ fechar }) {
           <Formulario onSubmit={async (e) => {
             e.preventDefault();
             const sucesso = await sendData();
-            if (sucesso) handleFechar();
+            if (sucesso) {
+              handleFechar();
+              window.location.reload();
+            }
           }}>
             <Label>Nome</Label>
             <InputSeguro
@@ -166,8 +167,8 @@ export default function PopupCadastroCliente({ fechar }) {
                 type="number"
                 value={numero}
                 onChange={(e) => {
-                    const valor = e.target.value.replace(/\D/g, '');
-                    setNumero(valor);
+                  const valor = e.target.value.replace(/\D/g, '');
+                  setNumero(valor);
                 }}
               />
             </LinhaEndereco>

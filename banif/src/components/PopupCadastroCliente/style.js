@@ -57,14 +57,16 @@ export const Label = styled.label`
 
 export const LinhaEndereco = styled.div`
   display: flex;
-  justify-content: space-between;
-  width: 80%;
+  justify-content: center;
   gap: 10px;
-
-  & > div {
-    width: 100%;
+  width: 80%; 
+  
+  & > * {
+    flex: 1; 
+    max-width: 200px;
   }
 `;
+
 
 export const BotaoFechar = styled.button`
   position: absolute;
@@ -104,7 +106,7 @@ export const BotaoEnviar = styled.button`
 
 export const SelectSeguro = styled.select`
   background-color: #f8f9fa;
-  flex: 1;
+  width: 80%;
   height: calc(calc(3vh + 3vw) / 2);
   border: none;
   border-radius: 50px;

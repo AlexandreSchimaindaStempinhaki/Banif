@@ -24,7 +24,7 @@ export default class UserService {
     return agencia.toString()
   }
   static async listAll() {
-    return await User.all()
+    return await User.query().preload('conta').preload('papel')
   }
 
   static async create(data: any) {

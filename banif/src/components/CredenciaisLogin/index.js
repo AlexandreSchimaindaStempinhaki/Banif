@@ -41,6 +41,8 @@ export default function CredenciaisLogin() {
     setTimeout(() => {
       Client.post('auth/login', user).then(res => {
         const load = res.data
+        console.log(res.data)
+
         console.log(load)
 
         setUser(load)

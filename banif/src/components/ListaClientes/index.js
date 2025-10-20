@@ -1,4 +1,3 @@
-// src/components/ListaClientes/index.js
 import { useState } from "react";
 import {
   ListaContainer,
@@ -9,9 +8,12 @@ import {
   BotaoAcao,
 } from "./style";
 import PopupExtrato from "../PopupExtrato";
-import { clientes } from "../../data/clientes"; 
+import useClientes  from "../../data/clientes";
+import { OrbitProgress } from "react-loading-indicators";
+import { ContainerLoading } from "../CredenciaisLogin/style";
 
 export default function ListaClientes (){
+  const { data, load } = useClientes()
   const [extratoAtivo, setExtratoAtivo] = useState(null);
   const [enderecoAtivo, setEnderecoAtivo] = useState(null);
   const [animando, setAnimando] = useState(null);
@@ -24,10 +26,18 @@ export default function ListaClientes (){
     }, 300);
   };
 
+  if (load) {
+    return (
+       <ContainerLoading>
+          <OrbitProgress variant="spokes" color="#32cd32" size="medium" text="" textColor="" />
+       </ContainerLoading>
+    );
+  }
+
   return (
     <>
       <ListaContainer>
-        {clientes.map((cliente, index) => {
+        {data.map((cliente, index) => {
           const mostrarEndereco = enderecoAtivo === index;
           const isAnimating = animando === index;
 
@@ -39,16 +49,16 @@ export default function ListaClientes (){
                 {mostrarEndereco ? (
                   <>
                     <InfoCliente>
-                      <strong>Rua:</strong> {cliente.endereco.rua}
+                      <strong>Rua:</strong> {cliente.rua}
                     </InfoCliente>
                     <InfoCliente>
-                      <strong>Número:</strong> {cliente.endereco.numero}
+                      <strong>Número:</strong> {cliente.numero}
                     </InfoCliente>
                     <InfoCliente>
-                      <strong>Cidade:</strong> {cliente.endereco.cidade}
+                      <strong>Cidade:</strong> {cliente.cidade}
                     </InfoCliente>
                     <InfoCliente>
-                      <strong>Estado:</strong> {cliente.endereco.estado}
+                      <strong>Estado:</strong> {cliente.estado}
                     </InfoCliente>
                   </>
                 ) : (
@@ -60,11 +70,14 @@ export default function ListaClientes (){
                       <strong>Email:</strong> {cliente.email}
                     </InfoCliente>
                     <InfoCliente>
-                      <strong>Agência:</strong> {cliente.agencia}
+                      <strong>Agência:</strong> {cliente.conta.numeroAgencia}
                     </InfoCliente>
                     <InfoCliente>
-                      <strong>Conta:</strong> {cliente.conta}
+                      <strong>Conta:</strong> {cliente.conta.numeroConta}
                     </InfoCliente>
+                    {/* <InfoCliente>
+                      <strong>Senha:</strong> {cliente.senha}
+                    </InfoCliente> */}
                   </>
                 )}
               </div>

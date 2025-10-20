@@ -1,4 +1,5 @@
 import User from '#models/user'
+import { permissions } from '../utils/permissoes.js'
 
 export default class AuthService {
   async login(email: string, senha: string) {
@@ -22,6 +23,7 @@ export default class AuthService {
         value: token.value!.release(),
         expiresAt: token.expiresAt,
       },
+      permissions: { ...permissions[user.papel_id] },
     }
   }
 

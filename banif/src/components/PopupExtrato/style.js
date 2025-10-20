@@ -32,16 +32,17 @@ export const PopupContainer = styled.div`
   display: flex;
   flex-direction: column;
   animation: ${fadeIn} 0.3s ease;
+  box-shadow: 0 0 30px 5px rgba(0, 71, 171, 0.3);
 `;
 
 export const Header = styled.div`
   display: flex;
-  align-itens: center;
+  align-items: center;
   background: linear-gradient(135deg, #002f6c, #0047ab);
   color: #fff;
   display: flex;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
+  padding: 1vw 2vw;
 `;
 
 export const Titulo = styled.p`
@@ -54,7 +55,8 @@ export const Saldo = styled.div`
   padding: 1rem 1.5rem;
   font-size: 1.2rem;
   font-weight: bold;
-  background: rgba(0, 71, 171, 0.45);
+  background: rgba(0, 71, 171, 0.3);
+  color: #002f6c;
 `;
 
 export const Body = styled.div`
@@ -66,18 +68,45 @@ export const Body = styled.div`
 export const Transferencia = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
   font-size: 1rem;
   font-weight: 600;
-  color: ${({ tipo }) => (tipo === "saida" ? "#dc3545" : "#28a745")};
-  transition: color 0.3s ease;
+  color: ${({ tipo }) => {
+    switch (tipo) {
+      case "positivo":
+        return "#28a745"; // Verde para valores positivos
+      case "negativo":
+        return "#dc3545"; // Vermelho para valores negativos
+      case "neutro":
+        return "#6c757d"; // Cinza para valor zero
+      default:
+        return "#6c757d";
+    }
+  }};
+  transition: all 0.3s ease;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background: rgba(0, 0, 0, 0.02);
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+    transform: translateX(5px);
+  }
 `;
 
 export const Footer = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
   padding: 1rem;
   gap: 1rem;
+  background: rgba(0, 0, 0, 0.03);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+
+  span {
+    font-weight: 600;
+    color: #002f6c;
+  }
 `;
 
 export const BotaoPagina = styled.button`
@@ -88,6 +117,7 @@ export const BotaoPagina = styled.button`
   color: #fff;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-weight: 600;
 
   &:disabled {
     background: #aaa;
@@ -96,5 +126,6 @@ export const BotaoPagina = styled.button`
 
   &:hover:not(:disabled) {
     filter: brightness(1.2);
+    transform: translateY(-1px);
   }
 `;

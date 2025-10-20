@@ -1,12 +1,14 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, hasMany, belongsTo } from '@adonisjs/lucid/orm'
-import type { HasMany, BelongsTo } from '@adonisjs/lucid/types/relations'
+import { BaseModel, column, hasMany, belongsTo, hasOne } from '@adonisjs/lucid/orm'
+import type { HasMany, BelongsTo, HasOne } from '@adonisjs/lucid/types/relations'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import hash from '@adonisjs/core/services/hash'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { compose } from '@adonisjs/core/helpers'
 import Conta from './conta.js'
 import Papel from './papel.js'
+import Movimentacao from './movimentacao.js'
+import Aplicacao from './aplicacao_financeira.js'
 
 const AuthFind = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -52,9 +54,15 @@ export default class User extends compose(BaseModel, AuthFind) {
 
   static accessTokens = DbAccessTokensProvider.forModel(User)
 
-  @hasMany(() => Conta, { foreignKey: 'cliente_id' })
-  declare contas: HasMany<typeof Conta>
+  @hasOne(() => Conta, { foreignKey: 'cliente_id' })
+  declare conta: HasOne<typeof Conta>
 
   @belongsTo(() => Papel, { foreignKey: 'papel_id' })
   declare papel: BelongsTo<typeof Papel>
+
+  @hasMany(() => Movimentacao, { foreignKey: 'conta_origem_id' })
+  declare movimentacoesOrigem: HasMany<typeof Movimentacao>
+
+  @hasMany(() => Movimentacao, { foreignKey: 'conta_destino_id' })
+  declare movimentacoesDestino: HasMany<typeof Movimentacao>
 }
