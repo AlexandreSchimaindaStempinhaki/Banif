@@ -12,7 +12,13 @@ export const createUser = vine.compile(
         return !user
       }),
     senha: vine.string().minLength(8).maxLength(8),
-    cpf: vine.string().regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/),
+    cpf: vine
+      .string()
+      .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/)
+      .unique(async (db, value) => {
+        const user = await db.from('users').where('cpf', value).first()
+        return !user
+      }),
     cidade: vine.string().trim().minLength(2).maxLength(100),
     estado: vine.string().trim().minLength(2).maxLength(2),
     rua: vine.string().trim().minLength(2).maxLength(100),

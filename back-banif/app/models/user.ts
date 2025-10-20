@@ -59,10 +59,4 @@ export default class User extends compose(BaseModel, AuthFind) {
 
   @belongsTo(() => Papel, { foreignKey: 'papel_id' })
   declare papel: BelongsTo<typeof Papel>
-
-  @hasMany(() => Movimentacao, { foreignKey: 'conta_origem_id' })
-  declare movimentacoesOrigem: HasMany<typeof Movimentacao>
-
-  @hasMany(() => Movimentacao, { foreignKey: 'conta_destino_id' })
-  declare movimentacoesDestino: HasMany<typeof Movimentacao>
 }

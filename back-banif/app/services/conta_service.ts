@@ -14,7 +14,13 @@ export default class ContasService {
   }
 
   static async getById(id: number) {
-    return await Conta.findOrFail(id)
+    return await Conta.query()
+      .where('id', id)
+      .preload('cliente')
+      .preload('movimentacoesOrigem')
+      .preload('movimentacoesDestino')
+      .preload('aplicacoes')
+      .firstOrFail()
   }
 
   static async update(id: number, data: any) {

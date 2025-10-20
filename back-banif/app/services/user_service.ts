@@ -24,7 +24,19 @@ export default class UserService {
     return agencia.toString()
   }
   static async listAll() {
-    return await User.query().preload('conta').preload('papel')
+    return await User.query()
+      .preload('conta', (contaQuery) => {
+        contaQuery
+          .preload('movimentacoesOrigem', (movQuery) => {
+            movQuery.preload('conta_origem', (c) => c.preload('cliente'))
+            movQuery.preload('conta_destino', (c) => c.preload('cliente'))
+          })
+          .preload('movimentacoesDestino', (movQuery) => {
+            movQuery.preload('conta_origem', (c) => c.preload('cliente'))
+            movQuery.preload('conta_destino', (c) => c.preload('cliente'))
+          })
+      })
+      .preload('papel')
   }
 
   static async create(data: any) {
