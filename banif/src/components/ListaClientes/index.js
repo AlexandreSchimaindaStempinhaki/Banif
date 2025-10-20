@@ -6,11 +6,11 @@ import {
   InfoCliente,
   ContainerBotoes,
   BotaoAcao,
+  ContainerLoading,
 } from "./style";
 import PopupExtrato from "../PopupExtrato";
 import useClientes  from "../../data/clientes";
 import { OrbitProgress } from "react-loading-indicators";
-import { ContainerLoading } from "../CredenciaisLogin/style";
 
 export default function ListaClientes (){
   const { data, load } = useClientes()
