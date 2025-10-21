@@ -25,15 +25,14 @@ import {
   Coluna,
 } from "./style";
 
-import { ContainerLoading } from "../../components/CredenciaisLogin/style";
-
+import { ContainerLoading } from "../../components/ListaClientes/style";
 export default function Extrato({ cliente }) {
   const { load } = useClientes()
   const [paginaAtual, setPaginaAtual] = useState(0);
   const [extratoAberto, setExtratoAberto] = useState(false);
   const [saldoVisivel, setSaldoVisivel] = useState(false);
   const [aplicacoesVisivel, setAplicacoesVisivel] = useState(false);
-  const porPagina = 10;
+  const porPagina = 1000;
   const movimentacoesOrigem = cliente?.conta?.movimentacoesOrigem || [];
   const movimentacoesDestino = cliente?.conta?.movimentacoesDestino || [];
 
@@ -162,7 +161,12 @@ export default function Extrato({ cliente }) {
               let descricao = trans.tipo || trans.descricao;
               let valor = trans.valor;
 
-              if (!trans.conta_origem?.id) {
+              if (trans?.tipo == "deposito") {
+              descricao = 'Depósito';
+              valor = +Math.abs(valor);
+              }
+
+              else if (!trans.conta_origem?.id) {
                 descricao = 'Dinheiro Resgatado';
                 valor = Math.abs(valor);
               }

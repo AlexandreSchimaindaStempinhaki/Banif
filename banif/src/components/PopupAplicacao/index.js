@@ -58,7 +58,7 @@ export default function PopupAplicacao({ cliente, fechar }) {
 
       try {
         const valorNum = parseFloat(valor.replace(",", "."));
-        const aplicacao = {conta_id: cliente?.conta.id, valor: valorNum}
+        const aplicacao = {conta_id: cliente?.conta.id, valor: valorNum, senha: senha}
         const response = await Client.post("aplicacoes", aplicacao)
 
         setMensagem({
@@ -97,7 +97,7 @@ export default function PopupAplicacao({ cliente, fechar }) {
               }
             />
 
-            {/* <Label>Senha para Confirmação</Label>
+             <Label>Senha para Confirmação</Label>
             <InputSeguro
               placeholder="Digite sua senha"
               type="password"
@@ -105,7 +105,7 @@ export default function PopupAplicacao({ cliente, fechar }) {
               onChange={(e) =>
                 setSenha(e.target.value)
               } />
-            <BotaoEnviar type="submit">Aplicar</BotaoEnviar> */}
+            <BotaoEnviar type="submit">Aplicar</BotaoEnviar>
           </Formulario>
         </Popup>
       </Container>

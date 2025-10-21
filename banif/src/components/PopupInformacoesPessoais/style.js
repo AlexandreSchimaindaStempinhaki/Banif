@@ -120,11 +120,11 @@ export const NomeCliente = styled.h2`
   font-size: 1.8rem;
   font-weight: bold;
   background: linear-gradient(45deg, #002f6c, #0047ab);
-  background-clip: text;
+  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-align: center;
-  margin: 0 0 1rem 0;
-  padding-right: 40px; /* 🔧 ADICIONADO: Para não sobrepor o botão X */
+  background-clip: text;
+  color: transparent;
+  padding-right: 40px;
 `;
 
 export const ContainerBotoes = styled.div`

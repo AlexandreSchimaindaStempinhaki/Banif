@@ -22,6 +22,7 @@ export default class UsersController {
   async create({}: HttpContext) {}
 
   async store({ request, response, auth, bouncer }: HttpContext) {
+    
     await auth.authenticate()
     const user = auth.getUserOrFail()
 

@@ -45,7 +45,7 @@ export const CampoTexto = styled.input`
   background-clip: padding-box, border-box;
   color: #000000;
   padding: 1vw;
-  font-size: calc((1vw+1vh) / 2);
+  font-size: calc((2vw+2vh) / 2);
   &:focus {
     outline: none;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);

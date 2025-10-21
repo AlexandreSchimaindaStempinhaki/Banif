@@ -49,8 +49,10 @@ export const NomeCliente = styled.h2`
   font-size: 1.6rem;
   font-weight: bold;
   background: linear-gradient(45deg, #002f6c, #0047ab);
-  background-clip: text;
+  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
 `;
 
 export const ContainerBotoes = styled.div`
@@ -86,6 +88,6 @@ export const ContainerLoading = styled.div`
   justify-content: center;
   align-items: center;
   width: 100vw;
-  height:100vh;
+  height:76vh;
   margin-top: 5vh;
 `

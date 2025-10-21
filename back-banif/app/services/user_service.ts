@@ -1,4 +1,3 @@
-import Hash from '@adonisjs/core/services/hash'
 import User from '#models/user'
 import Conta from '#models/conta'
 
@@ -41,7 +40,7 @@ export default class UserService {
   }
 
   static async create(data: any) {
-    data.senha = await Hash.make(data.senha)
+    data.senha = await data.senha
     const user = await User.create(data)
 
     if (user.papel_id === 2) {

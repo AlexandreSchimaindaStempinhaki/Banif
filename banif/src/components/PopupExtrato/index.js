@@ -76,14 +76,18 @@ export default function PopupExtrato({ cliente, onClose }) {
             let descricao = trans.tipo || trans.descricao;
             let valor = trans.valor;
 
-            console.log(trans)
-            if (!trans.conta_origem?.id) {
+            if (trans?.tipo == "deposito") {
+              descricao = 'Depósito';
+              valor = +Math.abs(valor);
+            }
+
+            else if (!trans.conta_origem?.id) {
 
               descricao = 'Dinheiro Resgatado';
               valor = Math.abs(valor);
             } 
             
-            if (!trans.conta_destino?.id) {
+            else if (!trans.conta_destino?.id) {
 
               descricao = 'Dinheiro Aplicado';
               valor = -Math.abs(valor);

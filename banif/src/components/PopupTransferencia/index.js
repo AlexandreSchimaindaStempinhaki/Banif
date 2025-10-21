@@ -150,15 +150,9 @@ export default function PopupTransferencia({ cliente, fechar }) {
                   name="contaDestino"
                   value={contaDestino}
                   maxLength={7}
-                  onChange={(e) => {
-                    let val = e.target.value
-                      .replace(/\D/g, "")
-                      .replace(/(\d{5})(\d{0,1})/, "$1-$2");
-
-                    if (val.length <= 7) {
-                      setContaDestino(val);
-                    }
-                  }}
+                  onChange={(e) =>
+                    setContaDestino(e.target.value)
+                  }
                 />
               </div>
             </LinhaCampos>

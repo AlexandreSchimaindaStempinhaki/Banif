@@ -75,7 +75,7 @@ export default function CredenciaisLogin() {
         load
           ?
           <ContainerLoading>
-            <OrbitProgress variant="spokes" color="#32cd32" size="medium" text="" textColor="" />
+            <OrbitProgress variant="spokes" color="#002F6C" size="medium" text="" textColor="" />
           </ContainerLoading>
           :
           <SubContainer>
