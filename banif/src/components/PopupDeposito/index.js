@@ -7,13 +7,13 @@ import {
   Label,
   BotaoFechar,
   BotaoEnviar,
-  SaldoInfo,
+  Titulo,
 } from "./style";
 import PopupMensagem from "../PopupMensagem";
 import InputSeguro from "../InputSeguro";
 import { Client } from "../../api/client";
 
-export default function PopupAplicacao({ cliente, fechar }) {
+export default function PopupDeposito({ cliente, fechar }) {
   const [fechando, setFechando] = useState(false);
   const [mensagem, setMensagem] = useState(null);
 
@@ -35,9 +35,8 @@ export default function PopupAplicacao({ cliente, fechar }) {
       erros.push("Valor é obrigatório");
     } else {
       const valorNum = parseFloat(valor.replace(",", "."));
-      if (isNaN(valorNum) || valorNum <= 0) erros.push("Valor deve ser positivo");
-      else if (valorNum > cliente?.conta?.saldo)
-        erros.push("Saldo insuficiente para realizar a aplicação");
+      if (isNaN(valorNum) || valorNum <= 0)
+        erros.push("Valor deve ser positivo");
     }
 
     if (!senha.trim()) erros.push("Senha é obrigatória");
@@ -51,31 +50,52 @@ export default function PopupAplicacao({ cliente, fechar }) {
     async (e) => {
       e.preventDefault();
       const erros = validarFormulario();
+
       if (erros.length > 0) {
-        setMensagem({ texto: erros.map(e => `• ${e}`).join("\n"), tipo: "error" });
+        setMensagem({
+          texto: `Erros de validação:\n${erros.map((e) => `• ${e}`).join("\n")}`,
+          tipo: "error",
+        });
         return;
       }
 
       try {
         const valorNum = parseFloat(valor.replace(",", "."));
-        const aplicacao = {conta_id: cliente?.conta.id, valor: valorNum}
-        const response = await Client.post("aplicacoes", aplicacao)
+
+        const deposito = {
+          tipo: 'deposito',
+          valor: valorNum,
+          conta_origem_id: null,
+          conta_destino_id: cliente?.conta?.id,
+          senha: senha,
+        };
+
+        const response = await Client.post("movimentacoes", deposito);
 
         setMensagem({
-          texto: response.data?.message || `Aplicação de R$ ${valorNum.toFixed(2)} realizada!`,
+          texto:
+            response.data?.message ||
+            `Depósito de R$ ${valorNum.toFixed(2)} realizado com sucesso!`,
           tipo: "success",
         });
-        setTimeout(() => fechar?.(), 2500);
-        window.location.reload();
+
+        setTimeout(() => {
+          fechar?.();
+          window.location.reload();
+        }, 2000);
       } catch (error) {
-        const msgBackend = error.response?.data?.details || error.response?.data?.message;
-        setMensagem({ texto: msgBackend || "Erro inesperado!", tipo: "error" });
+        const msgBackend =
+          error.response?.data?.details || error.response?.data?.message;
+        setMensagem({
+          texto: msgBackend || "Erro ao realizar depósito!",
+          tipo: "error",
+        });
       }
     },
+    [valor, senha, cliente, fechar]
   );
 
-  const formatarSaldo = () =>
-    cliente?.conta?.saldo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
 
   return (
     <>
@@ -86,9 +106,9 @@ export default function PopupAplicacao({ cliente, fechar }) {
           </BotaoFechar>
 
           <Formulario onSubmit={handleSubmit}>
-            <SaldoInfo>Saldo Disponível: {formatarSaldo()}</SaldoInfo>
+            <Titulo>Depósito</Titulo>
 
-            <Label>Valor da Aplicação</Label>
+            <Label>Valor do Depósito</Label>
             <InputSeguro
               placeholder="0,00"
               value={valor}
@@ -97,15 +117,15 @@ export default function PopupAplicacao({ cliente, fechar }) {
               }
             />
 
-            {/* <Label>Senha para Confirmação</Label>
+            <Label>Senha para Confirmação</Label>
             <InputSeguro
               placeholder="Digite sua senha"
               type="password"
               value={senha}
-              onChange={(e) =>
-                setSenha(e.target.value)
-              } />
-            <BotaoEnviar type="submit">Aplicar</BotaoEnviar> */}
+              onChange={(e) => setSenha(e.target.value)}
+            />
+
+            <BotaoEnviar type="submit">Depositar</BotaoEnviar>
           </Formulario>
         </Popup>
       </Container>

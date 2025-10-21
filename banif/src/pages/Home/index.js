@@ -15,7 +15,7 @@ import { ContainerLoading } from "../../components/CredenciaisLogin/style";
 
 export default function Home() {
   const [cliente, setCliente] = useState(null);
-  const { data, load } = useClientes()
+  const { data } = useClientes()
 
   const dataUser = getDataUser()
   const navigate = useNavigate();
@@ -48,12 +48,6 @@ export default function Home() {
   }, [data])
 
   return (
-    load
-      ?
-      <ContainerLoading>
-        <OrbitProgress variant="spokes" color="#002F6C" size="medium" text="" textColor="" />
-      </ContainerLoading>
-      :
       <Corpo>
         <Cabecalho cliente={cliente} />
         <Extrato cliente={cliente} />

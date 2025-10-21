@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import PopupInformacoesPessoais from "../PopupInformacoesPessoais";
 import PopupTransferencia from "../PopupTransferencia";
 import PopupAplicacao from "../PopupAplicacao";
+import PopupDeposito from "../PopupDeposito";
+import PopupMensagem from "../PopupMensagem";
 import { Client, removeToken } from "../../api/client";
 import { getDataUser, removeDataUser } from "../../service/UserService";
 import { removePermissions } from "../../service/PermissionService";
@@ -16,6 +18,8 @@ export default function Cabecalho({ cliente }) {
   const [mostrarInformacoes, setMostrarInformacoes] = useState(false);
   const [mostrarTransferencia, setMostrarTransferencia] = useState(false);
   const [mostrarAplicacao, setMostrarAplicacao] = useState(false);
+  const [mostrarDeposito, setMostrarDeposito] = useState(false);
+  const [mensagem, setMensagem] = useState(null);
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -27,19 +31,18 @@ export default function Cabecalho({ cliente }) {
     setSidebarAberta(false);
     setClicado(false);
     setTimeout(() => {
-      Client.post('auth/logout').then(res => {
-        removeToken()
-        removePermissions()
-        removeDataUser()
-        navigate('/')
-      })
+      Client.post("auth/logout")
+        .then((res) => {
+          removeToken();
+          removePermissions();
+          removeDataUser();
+          navigate("/");
+        })
         .catch(function (error) {
-          console.log(error)
+          console.log(error);
         })
-        .finally(() => {
-        })
-
-    }, 1000)
+        .finally(() => { });
+    }, 1000);
     navigate("/");
   };
 
@@ -73,6 +76,47 @@ export default function Cabecalho({ cliente }) {
     setMostrarAplicacao(false);
   };
 
+  const handleAbrirDeposito = () => {
+    setSidebarAberta(false);
+    setClicado(false);
+    setMostrarDeposito(true);
+  };
+
+  const handleFecharDeposito = () => {
+    setMostrarDeposito(false);
+  };
+
+  const handleResgatarAplicacao = async () => {
+    setSidebarAberta(false);
+    setClicado(false);
+
+    const aplicacoesAtivas = cliente?.conta?.aplicacoes?.filter(a => a.status === "ativo") || [];
+
+    if (aplicacoesAtivas.length === 0) {
+      setMensagem({ texto: "Não há aplicações ativas para resgatar.", tipo: "error" });
+      return;
+    }
+
+    try {
+      for (const aplicacao of aplicacoesAtivas) {
+        await Client.put(`aplicacoes/${aplicacao.id}`, { status: "resgatado" });
+      }
+
+      setMensagem({ texto: "Todas as aplicações foram resgatadas com sucesso!", tipo: "success" });
+
+      window.location.reload();
+
+    } catch (error) {
+      const msgBackend = error.response?.data?.details || error.response?.data?.message;
+      setMensagem({ texto: msgBackend || "Erro ao resgatar aplicações.", tipo: "error" });
+    }
+  };
+
+
+  const handleFecharMensagem = () => {
+    setMensagem(null);
+  };
+
   return (
     <>
       <Header>
@@ -91,8 +135,13 @@ export default function Cabecalho({ cliente }) {
             Realizar Transferência
           </SidebarButton>
           <SidebarButton onClick={handleAbrirAplicacao}>
-            {" "}
             Realizar Aplicação
+          </SidebarButton>
+          <SidebarButton onClick={handleAbrirDeposito}>
+            Realizar Depósito
+          </SidebarButton>
+          <SidebarButton onClick={handleResgatarAplicacao}>
+            Resgatar Aplicação
           </SidebarButton>
           <SidebarButton onClick={handleLogout}>Sair</SidebarButton>
         </Sidebar>
@@ -114,6 +163,19 @@ export default function Cabecalho({ cliente }) {
 
       {mostrarAplicacao && cliente && (
         <PopupAplicacao cliente={cliente} fechar={handleFecharAplicacao} />
+      )}
+
+      {mostrarDeposito && cliente && (
+        <PopupDeposito cliente={cliente} fechar={handleFecharDeposito} />
+      )}
+
+      {mensagem && (
+        <PopupMensagem
+          mensagem={mensagem.texto}
+          tipo={mensagem.tipo}
+          fechar={handleFecharMensagem}
+          duracao={3000}
+        />
       )}
     </>
   );

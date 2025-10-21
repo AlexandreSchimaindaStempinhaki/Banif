@@ -34,8 +34,8 @@ export default class AplicacoesController {
     }
 
     try {
-      const app = await AplicacoesService.create(payload)
-      return response.status(201).json({ message: 'OK', data: app })
+      const { message, aplicacao } = await AplicacoesService.create(payload)
+      return response.status(201).json({ message, data: aplicacao })
     } catch (error) {
       return response.status(500).json({ message: 'ERROR', details: error.message })
     }
@@ -62,6 +62,7 @@ export default class AplicacoesController {
   async update({ params, request, response, auth, bouncer }: HttpContext) {
     await auth.authenticate()
     const user = auth.getUserOrFail()
+
     const payload = await request.validateUsing(updateAplicacaoFinanceira)
     const app = await AplicacoesService.getById(params.id)
 
@@ -70,7 +71,7 @@ export default class AplicacoesController {
     }
 
     try {
-      const updatedApp = await AplicacoesService.update(params.id, payload)
+      const updatedApp = await AplicacoesService.resgatar(params.id)
       return response.status(200).json({ message: 'OK', data: updatedApp })
     } catch (error) {
       return response.status(500).json({ message: 'ERROR', details: error.message })

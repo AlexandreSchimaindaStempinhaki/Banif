@@ -7,7 +7,7 @@ import Hash from '@adonisjs/core/services/hash'
 interface AplicacaoData {
   conta_id: number
   valor: number
-  senha: string
+  senha?: string
 }
 
 export default class AplicacoesService {
@@ -19,7 +19,9 @@ export default class AplicacoesService {
     const conta = await Conta.findOrFail(data.conta_id)
     const cliente = await Cliente.findOrFail(conta.cliente_id)
 
-    const senhaValida = await Hash.verify(cliente.senha, data.senha)
+    if (!data.senha) throw new Error('Senha é obrigatória')
+
+    const senhaValida = await Hash.verify(cliente.senha, data?.senha)
     if (!senhaValida) throw new Error('Senha incorreta')
 
     if (conta.saldo < data.valor) throw new Error('Saldo insuficiente para aplicação')
@@ -43,17 +45,6 @@ export default class AplicacoesService {
     return { message: 'Aplicação realizada com sucesso', aplicacao }
   }
 
-  static async getById(id: number) {
-    return await AplicacaoFinanceira.query().where('id', id).preload('conta').firstOrFail()
-  }
-
-  static async update(id: number, data: any) {
-    const app = await AplicacaoFinanceira.findOrFail(id)
-    app.merge(data)
-    await app.save()
-    return app
-  }
-
   static async resgatar(id: number) {
     const aplicacao = await AplicacaoFinanceira.findOrFail(id)
 
@@ -65,9 +56,31 @@ export default class AplicacoesService {
     await aplicacao.save()
 
     const conta = await Conta.findOrFail(aplicacao.conta_id)
-    conta.saldo += aplicacao.valor
+
+    const saldoAtual = Number(conta.saldo) || 0
+    const valorAplicacao = Number(aplicacao.valor) || 0
+
+    conta.saldo = Math.round((saldoAtual + valorAplicacao) * 100) / 100
     await conta.save()
 
+    await Movimentacao.create({
+      tipo: 'transferencia',
+      valor: valorAplicacao,
+      conta_origem_id: null,
+      conta_destino_id: conta.id,
+    })
+
     return { message: 'Aplicação resgatada com sucesso', aplicacao }
+  }
+
+  static async getById(id: number) {
+    return await AplicacaoFinanceira.query().where('id', id).preload('conta').firstOrFail()
+  }
+
+  static async update(id: number, data: any) {
+    const app = await AplicacaoFinanceira.findOrFail(id)
+    app.merge(data)
+    await app.save()
+    return app
   }
 }
