@@ -17,16 +17,42 @@ export default class MovimentacoesService {
       .preload('conta_destino', (q) => q.preload('cliente'))
   }
 
+  static async create(data: {
+    tipo: 'transferencia' | 'deposito' | 'saque'
+    valor: number
+    conta_origem_id?: number
+    conta_destino_id?: number
+    senha?: string
+  }) {
+    switch (data.tipo) {
+      case 'transferencia':
+        if (!data.senha) throw new Error('Senha obrigatória para transferência')
+        return await this.createTransferencia(data as TransferenciaData)
+
+      case 'deposito':
+        if (!data.conta_destino_id) throw new Error('Conta destino obrigatória')
+        const contaDestino = await Conta.findOrFail(data.conta_destino_id)
+        contaDestino.saldo += data.valor
+        await contaDestino.save()
+        await Movimentacao.create({
+          tipo: 'deposito',
+          valor: data.valor,
+          conta_destino_id: contaDestino.id,
+        })
+        return { message: 'Depósito realizado com sucesso' }
+      default:
+        throw new Error('Tipo de movimentação inválido')
+    }
+  }
+
   static async createTransferencia(data: TransferenciaData) {
     const contaOrigem = await Conta.findOrFail(data.conta_origem_id)
     const clienteOrigem = await Cliente.findOrFail(contaOrigem.cliente_id)
 
+    const contaDestino = await Conta.findOrFail(data.conta_destino_id)
+
     const senhaValida = await Hash.verify(clienteOrigem.senha, data.senha)
     if (!senhaValida) throw new Error('Senha incorreta')
-
-    if (contaOrigem.saldo < data.valor) throw new Error('Saldo insuficiente')
-
-    const contaDestino = await Conta.findOrFail(data.conta_destino_id)
 
     await Movimentacao.create({
       tipo: 'transferencia',
@@ -35,8 +61,11 @@ export default class MovimentacoesService {
       conta_destino_id: contaDestino.id,
     })
 
-    contaOrigem.saldo -= data.valor
-    contaDestino.saldo += data.valor
+    const valorCentavos = Math.round(data.valor * 100)
+
+    contaOrigem.saldo = Math.round(contaOrigem.saldo * 100 - valorCentavos) / 100
+    contaDestino.saldo = Math.round(contaDestino.saldo * 100 + valorCentavos) / 100
+
     await contaOrigem.save()
     await contaDestino.save()
 
