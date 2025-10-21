@@ -40,7 +40,6 @@ export default function PopupAplicacao({ cliente, fechar }) {
         erros.push("Saldo insuficiente para realizar a aplicação");
     }
 
-    // Senha
     if (!senha.trim()) erros.push("Senha é obrigatória");
     // else if (senha.length !== 8) erros.push("Senha deve ter 8 números");
     // else if (!/^\d{8}$/.test(senha)) erros.push("Senha deve conter apenas números");
@@ -67,7 +66,7 @@ export default function PopupAplicacao({ cliente, fechar }) {
           tipo: "success",
         });
         setTimeout(() => fechar?.(), 2500);
-
+        window.location.reload();
       } catch (error) {
         const msgBackend = error.response?.data?.details || error.response?.data?.message;
         setMensagem({ texto: msgBackend || "Erro inesperado!", tipo: "error" });

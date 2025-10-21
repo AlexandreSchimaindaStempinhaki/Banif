@@ -35,6 +35,7 @@ export default class UserService {
             movQuery.preload('conta_origem', (c) => c.preload('cliente'))
             movQuery.preload('conta_destino', (c) => c.preload('cliente'))
           })
+          .preload('aplicacoes')
       })
       .preload('papel')
   }

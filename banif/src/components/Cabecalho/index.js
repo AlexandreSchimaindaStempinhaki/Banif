@@ -5,14 +5,17 @@ import LogoBlack from "../../images/logoBlack.png";
 import { useNavigate } from "react-router-dom";
 import PopupInformacoesPessoais from "../PopupInformacoesPessoais";
 import PopupTransferencia from "../PopupTransferencia";
-import PopupAplicacao from "../PopupAplicacao"; // 🔧 NOVO IMPORT
+import PopupAplicacao from "../PopupAplicacao";
+import { Client, removeToken } from "../../api/client";
+import { getDataUser, removeDataUser } from "../../service/UserService";
+import { removePermissions } from "../../service/PermissionService";
 
 export default function Cabecalho({ cliente }) {
   const [clicado, setClicado] = useState(false);
   const [sidebarAberta, setSidebarAberta] = useState(false);
   const [mostrarInformacoes, setMostrarInformacoes] = useState(false);
   const [mostrarTransferencia, setMostrarTransferencia] = useState(false);
-  const [mostrarAplicacao, setMostrarAplicacao] = useState(false); // 🔧 NOVO ESTADO
+  const [mostrarAplicacao, setMostrarAplicacao] = useState(false);
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -23,6 +26,20 @@ export default function Cabecalho({ cliente }) {
   const handleLogout = () => {
     setSidebarAberta(false);
     setClicado(false);
+    setTimeout(() => {
+      Client.post('auth/logout').then(res => {
+        removeToken()
+        removePermissions()
+        removeDataUser()
+        navigate('/')
+      })
+        .catch(function (error) {
+          console.log(error)
+        })
+        .finally(() => {
+        })
+
+    }, 1000)
     navigate("/");
   };
 
@@ -75,7 +92,6 @@ export default function Cabecalho({ cliente }) {
           </SidebarButton>
           <SidebarButton onClick={handleAbrirAplicacao}>
             {" "}
-            {/* 🔧 NOVO BOTÃO */}
             Realizar Aplicação
           </SidebarButton>
           <SidebarButton onClick={handleLogout}>Sair</SidebarButton>

@@ -19,7 +19,8 @@ export default function useClientes() {
 
                 const clientes = res.data;
 
-                const clientesFiltrados = clientes.data.filter(c => c.papelId === 2)
+                const clientesFiltrados = clientes.data
+                // .filter(c => c.papelId === 2)
                 
                 console.log(clientesFiltrados)
                 setData(clientesFiltrados)

@@ -6,15 +6,20 @@ import Rodape from "../../components/Rodape";
 import useClientes from "../../data/clientes";
 import Extrato from "../../components/Extrato";
 import { Client } from '../../api/client'
+import { getDataUser } from "../../service/UserService";
+import { useNavigate } from "react-router-dom";
+import { getPermissions } from "../../service/PermissionService";
 
 
 import { ContainerLoading } from "../../components/CredenciaisLogin/style";
 
-
-
 export default function Home() {
   const [cliente, setCliente] = useState(null);
   const { data, load } = useClientes()
+
+  const dataUser = getDataUser()
+  const navigate = useNavigate();
+  const permissions = getPermissions()
 
   function fetchData() {
 
@@ -32,7 +37,13 @@ export default function Home() {
     }, 1000)
   }
 
+
+  function verifyPermission() {
+    if (!dataUser) navigate('/')
+    else if (permissions.viewUser === false) navigate(-1)
+  }
   useEffect(() => {
+    verifyPermission()
     fetchData()
   }, [data])
 
@@ -40,7 +51,7 @@ export default function Home() {
     load
       ?
       <ContainerLoading>
-        <OrbitProgress variant="spokes" color="#32cd32" size="medium" text="" textColor="" />
+        <OrbitProgress variant="spokes" color="#002F6C" size="medium" text="" textColor="" />
       </ContainerLoading>
       :
       <Corpo>

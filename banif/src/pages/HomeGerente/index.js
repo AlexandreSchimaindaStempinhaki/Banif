@@ -16,7 +16,7 @@ export default function HomeGerente() {
 
   function verifyPermission() {
         if(!dataUser) navigate('/')
-        else if(permissions.viewUser === false) navigate(-1)
+        else if(permissions.createUser === false) navigate(-1)
     }
 
     useEffect(() => {

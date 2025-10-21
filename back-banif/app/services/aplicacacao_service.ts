@@ -31,7 +31,7 @@ export default class AplicacoesService {
     })
 
     await Movimentacao.create({
-      tipo: 'deposito',
+      tipo: 'transferencia',
       valor: data.valor,
       conta_origem_id: conta.id,
       conta_destino_id: null,

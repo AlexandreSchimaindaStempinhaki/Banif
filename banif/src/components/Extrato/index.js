@@ -1,4 +1,6 @@
 import { useState } from "react";
+import useClientes  from "../../data/clientes";
+import { OrbitProgress } from "react-loading-indicators";
 import {
   FiX,
   FiChevronDown,
@@ -23,7 +25,10 @@ import {
   Coluna,
 } from "./style";
 
+import { ContainerLoading } from "../../components/CredenciaisLogin/style";
+
 export default function Extrato({ cliente }) {
+  const { load } = useClientes()
   const [paginaAtual, setPaginaAtual] = useState(0);
   const [extratoAberto, setExtratoAberto] = useState(false);
   const [saldoVisivel, setSaldoVisivel] = useState(false);
@@ -68,8 +73,14 @@ export default function Extrato({ cliente }) {
 
   const formatarAplicacoes = () => {
     if (aplicacoesVisivel) {
-      const aplicacoes = cliente.aplicacoes || 1500;
-      return aplicacoes.toLocaleString("pt-BR", {
+      const aplicacoes = cliente?.conta?.aplicacoes || [];
+      const total_investido = aplicacoes.reduce((acc, aplicacao) => {
+        if (aplicacao?.status === "ativo") {
+          return acc + Number(aplicacao?.valor || 0)
+        }
+        return acc
+      }, 0)
+      return total_investido.toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL",
       });
@@ -97,6 +108,14 @@ export default function Extrato({ cliente }) {
       currency: "BRL",
     })}`;
   };
+
+  if (load) {
+    return (
+      <ContainerLoading>
+        <OrbitProgress variant="spokes" color="#002F6C" size="medium" text="" textColor="" />
+      </ContainerLoading>
+    );
+  }
 
   return (
     <Container>
