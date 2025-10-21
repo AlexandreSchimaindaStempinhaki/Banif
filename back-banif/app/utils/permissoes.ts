@@ -47,8 +47,8 @@ export const permissions = [
   },
   // CLIENTE - 2
   {
-    listUser: false,
-    viewUser: false,
+    listUser: true,
+    viewUser: true,
     createUser: false,
     editUser: false,
     deleteUser: false,
