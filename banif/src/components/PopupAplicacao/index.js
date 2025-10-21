@@ -11,140 +11,72 @@ import {
 } from "./style";
 import PopupMensagem from "../PopupMensagem";
 import InputSeguro from "../InputSeguro";
+import { Client } from "../../api/client";
 
 export default function PopupAplicacao({ cliente, fechar }) {
   const [fechando, setFechando] = useState(false);
   const [mensagem, setMensagem] = useState(null);
-  const [formData, setFormData] = useState({
-    valor: "",
-    senha: "",
-  });
 
-  const fecharMensagem = useCallback(() => {
-    setMensagem(null);
-  }, []);
+  const [valor, setValor] = useState("");
+  const [senha, setSenha] = useState("");
+
+  const fecharMensagem = useCallback(() => setMensagem(null), []);
 
   const handleFechar = useCallback(() => {
     setFechando(true);
-    setTimeout(() => {
-      if (fechar) fechar();
-    }, 250);
+    setTimeout(() => fechar?.(), 250);
   }, [fechar]);
 
-  const handleInputChange = useCallback((e) => {
-    const { name, value } = e.target;
-
-    if (name === "senha") {
-      // 🔧 APENAS NÚMEROS E LIMITE DE 8 DÍGITOS
-      const apenasNumeros = value.replace(/\D/g, "");
-      const senhaLimitada = apenasNumeros.slice(0, 8);
-
-      setFormData((prev) => ({
-        ...prev,
-        [name]: senhaLimitada,
-      }));
-    } else if (name === "valor") {
-      // 🔧 APENAS NÚMEROS E DECIMAIS PARA VALOR
-      const apenasNumeros = value.replace(/[^\d,]/g, "");
-      setFormData((prev) => ({
-        ...prev,
-        [name]: apenasNumeros,
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
-  }, []);
-
-  // 🔧 FUNÇÃO DE VALIDAÇÃO
   const validarFormulario = () => {
     const erros = [];
 
-    // Validação do Valor
-    if (!formData.valor.trim()) {
+    // Valor
+    if (!valor.trim()) {
       erros.push("Valor é obrigatório");
     } else {
-      const valorNumerico = parseFloat(formData.valor.replace(",", "."));
-      if (isNaN(valorNumerico) || valorNumerico <= 0) {
-        erros.push("Valor deve ser um número positivo");
-      } else if (valorNumerico > cliente.saldo) {
+      const valorNum = parseFloat(valor.replace(",", "."));
+      if (isNaN(valorNum) || valorNum <= 0) erros.push("Valor deve ser positivo");
+      else if (valorNum > cliente?.conta?.saldo)
         erros.push("Saldo insuficiente para realizar a aplicação");
-      }
     }
 
-    // 🔧 VALIDAÇÃO DA SENHA
-    if (!formData.senha.trim()) {
-      erros.push("Senha é obrigatória");
-    } else if (formData.senha.length !== 8) {
-      erros.push("Senha deve ter exatamente 8 números");
-    } else if (!/^\d{8}$/.test(formData.senha)) {
-      erros.push("Senha deve conter apenas números");
-    } else if (formData.senha !== cliente.senha) {
-      erros.push("Senha incorreta");
-    }
+    // Senha
+    if (!senha.trim()) erros.push("Senha é obrigatória");
+    // else if (senha.length !== 8) erros.push("Senha deve ter 8 números");
+    // else if (!/^\d{8}$/.test(senha)) erros.push("Senha deve conter apenas números");
 
     return erros;
   };
 
   const handleSubmit = useCallback(
-    (e) => {
+    async (e) => {
       e.preventDefault();
-
-      // 🔧 VALIDA ANTES DE ENVIAR
       const erros = validarFormulario();
-
       if (erros.length > 0) {
-        const mensagemErro = erros.map((erro) => `• ${erro}`).join("\n");
-
-        setMensagem({
-          texto: `Erros de validação:\n${mensagemErro}`,
-          tipo: "error",
-        });
+        setMensagem({ texto: erros.map(e => `• ${e}`).join("\n"), tipo: "error" });
         return;
       }
 
-      // 🔧 SIMULAÇÃO DA APLICAÇÃO
       try {
-        const valorAplicacao = parseFloat(formData.valor.replace(",", "."));
+        const valorNum = parseFloat(valor.replace(",", "."));
+        const aplicacao = {conta_id: cliente?.conta.id, valor: valorNum, senha: senha}
+        const response = await Client.post("aplicacoes", aplicacao)
 
-        // Aqui você faria a chamada API real para a aplicação
-        const aplicacaoSucesso = true; // Simulação
-
-        if (aplicacaoSucesso) {
-          setMensagem({
-            texto: `Aplicação de R$ ${valorAplicacao.toFixed(
-              2
-            )} realizada com sucesso!\nSeu dinheiro estará rendendo em 24h.`,
-            tipo: "success",
-          });
-          setTimeout(() => {
-            if (fechar) fechar();
-          }, 2500);
-        } else {
-          setMensagem({
-            texto: "Erro ao realizar aplicação!",
-            tipo: "error",
-          });
-        }
-      } catch (error) {
         setMensagem({
-          texto: "Erro inesperado ao processar aplicação",
-          tipo: "error",
+          texto: response.data?.message || `Aplicação de R$ ${valorNum.toFixed(2)} realizada!`,
+          tipo: "success",
         });
+        setTimeout(() => fechar?.(), 2500);
+
+      } catch (error) {
+        const msgBackend = error.response?.data?.details || error.response?.data?.message;
+        setMensagem({ texto: msgBackend || "Erro inesperado!", tipo: "error" });
       }
     },
-    [fechar, formData, cliente]
   );
 
-  // 🔧 FORMATA O VALOR PARA EXIBIÇÃO
-  const formatarSaldo = () => {
-    return cliente.saldo.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-  };
+  const formatarSaldo = () =>
+    cliente?.conta?.saldo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
   return (
     <>
@@ -160,20 +92,20 @@ export default function PopupAplicacao({ cliente, fechar }) {
             <Label>Valor da Aplicação</Label>
             <InputSeguro
               placeholder="0,00"
-              name="valor"
-              value={formData.valor}
-              onChange={handleInputChange}
+              value={valor}
+              onChange={(e) =>
+                setValor(e.target.value.replace(/[^\d,]/g, ""))
+              }
             />
 
             <Label>Senha para Confirmação</Label>
             <InputSeguro
               placeholder="Digite sua senha"
-              name="senha"
               type="password"
-              value={formData.senha}
-              onChange={handleInputChange}
-            />
-
+              value={senha}
+              onChange={(e) =>
+                setSenha(e.target.value)
+              } />
             <BotaoEnviar type="submit">Aplicar</BotaoEnviar>
           </Formulario>
         </Popup>
